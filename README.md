@@ -13,10 +13,6 @@ I will be using the following simple way to write C++ programs. My programs (and
 
 When coding in class, I will use the editor [Atom](https://atom.io), which comes with syntax highlighting, code completion to make coding easy. I will also use the plugin [PlatformIO IDE Terminal](https://atom.io/packages/platformio-ide-terminal) so that we can access a terminal to build programs without leaving Atom.
 
-### Prerequisite
-
-The programming examples in class and assignments for homework get complicated rather quickly. Therefore, you should have **working knowledge** of _object-oriented programming with C++_ and feel comfortable with _standard template library (STL)_. Also, a course in data structure is highly desirable. If this is not the case, you should consider to take [_Communication Software Design_](http://aps.ntut.edu.tw/course/tw/Curr.jsp?format=-2&code=5905005) instead. Check with me if you're in doubt.
-
 ### Prolog basics - goal, relational goals, Conjunction of goals, disjunction of goals,
 
 A _query_ consists of one or more _goal_:
@@ -50,3 +46,5 @@ X = 2.
 ```
 
 is a query with a _positive_ answer because the disjunctions succeeded in succession. Note that the ";" after "X=1" is typed by the user to query for more answers; the query terminates if the return key is hit.
+
+### Data objects in Prolog
