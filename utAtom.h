@@ -14,7 +14,8 @@ TEST(Atom, tom) {
 TEST(Atom, match_tom_and_jerry) {
   Atom tom("tom");
   Atom jerry("jerry");
-  EXPECT_TRUE(tom == jerry);
-  EXPECT_FALSE(tom == tom);
+  EXPECT_FALSE(tom == jerry);
+  EXPECT_TRUE(tom == tom);
 }
+
 #endif

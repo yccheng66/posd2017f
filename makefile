@@ -7,8 +7,13 @@ mainMadRace.o: mainMadRace.cpp madRace.h utMadRace.h
 
 utAtom: mainAtom.o
 	g++ -o utAtom mainAtom.o -lgtest -lpthread
-mainAtom.o: mainAtom.cpp utAtom.h atom.h 
+mainAtom.o: mainAtom.cpp utAtom.h atom.h
 	g++ -std=c++11 -c mainAtom.cpp
+
+utVariable: mainVariable.o
+		g++ -o utVariable mainVariable.o -lgtest -lpthread
+mainVariable.o: mainVariable.cpp utVariable.h variable.h
+		g++ -std=c++11 -c mainVariable.cpp
 
 #exp: mainExp.o
 #	g++ -o exp mainExp.o -lgtest -lpthread
