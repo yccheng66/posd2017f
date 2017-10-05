@@ -48,3 +48,22 @@ X = 2.
 is a query with a _positive_ answer because the disjunctions succeeded in succession. Note that the ";" after "X=1" is typed by the user to query for more answers; the query terminates if the return key is hit.
 
 ### Data objects in Prolog
+
+Prolog comes four types of data objects in Prolog: _atom_, _number_ (collectively known as _constant_), variable (forming _simple object_ with constant), and _structure_. For a simple description of syntax, see
+[Data objects in Prolog](http://eecs.wsu.edu/~cook/ai/lectures/prolog/node15.html).
+
+Atom and number are _self-identifying_: thus wherever you see it, the atom 'tom' will always be tom, and the number 1 will always be 1. The _value_ of an atom is exactly the _symbol_ of the atom.
+
+Variable brings _universal quantification_ to Prolog. Variable X becomes _instantiated_ when it is matched with a constant. This
+```prolog
+X = 1
+```
+gives the variable with symbol X the value of 1.  
+
+A structure is defined by a name and its arguments. Structure makes it possible to describe arbitrary complex objects through composition of other objects including structures.
+
+```prolog
+point(1,1)
+```
+
+is a structure with name _point_ and arguments 1 and 1.
