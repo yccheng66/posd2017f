@@ -68,3 +68,15 @@ triangle(point(1,1), point(0,0), point(0,1))
 ```
 
 where _point(1, 1)_ is a structure with name _point_ and arguments _1_ and _1_, etc.
+
+### Rules of terms matching (Bratko p.41)
+
+Let _S_ and _T_ be two terms.
+
+* If _S_ and _T_ are constants then _S_ and _T_ match only if they are the same object.
+* If _S_ is a variable and T is anything, then they match, and _S_ is instantiated to _T_. Conversely, if _T_ is a variable then _T_ is instantiated to _S_.  
+* If _S_ and _T_ are structures then they match only if
+  * _S_ and _T_ have the same principal functor, and
+  * all their corresponding components match.
+
+  The result of the instantiation is determined by the matching of the components.
