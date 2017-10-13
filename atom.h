@@ -9,11 +9,15 @@ using std::string;
 class Term{
 
 public:
-  virtual string symbol(){}
+  virtual string symbol() const= 0;
 
-  virtual string value(){}
+  virtual string value() const{
+    return symbol();
+  };
 
-  virtual bool match(){}
+  virtual bool match(Term & term) {
+    return symbol() == term.symbol();
+  }
 
 
 };
@@ -21,8 +25,8 @@ public:
 class Atom : public Term{
 public:
   Atom (string s):_symbol(s) {}
-  bool operator ==(Atom a) {return _symbol == a._symbol;}
-  string symbol() {
+
+  string symbol() const{
     return _symbol;
   }
 
