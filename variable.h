@@ -5,23 +5,26 @@
 #include "atom.h"
 using std::string;
 
-class Variable{
+class Variable : public Term {
 public:
-  Variable(string s):_symbol(s){}
-  string const _symbol;
-  string value(){ return _value; }
-  bool match( Atom atom ){
-    bool ret = _assignable;
-    if(_assignable){
-      _value = atom._symbol ;
-      _assignable = false;
-    }
-    return ret;
+  Variable(string s):Term(s), _inst(0){}
+  string value() const {
+    if (_inst)
+      return _inst->value();
+    else
+      return Term::value();
   }
-
+  bool match( Term & term ){
+    if (this == &term)
+      return true;
+    if(!_inst){
+      _inst = &term ;
+      return true;
+    }
+    return _inst->match(term);
+  }
 private:
-  string _value;
-  bool _assignable = true;
+  Term * _inst;
 };
 
 #endif

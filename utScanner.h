@@ -65,6 +65,7 @@ TEST_F(ScannerTest, nextTokenNumber) {
   int token = scanner.nextToken();
   EXPECT_EQ(NUMBER, token);
   EXPECT_EQ(135, scanner.tokenValue());
+  EXPECT_TRUE(symtable.empty());
 }
 
 TEST_F(ScannerTest, nextTokenAtom) {
