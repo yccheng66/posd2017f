@@ -23,9 +23,9 @@ mainVariable.o: mainVariable.cpp utVariable.h variable.h
 #mainExp.o: mainExp.cpp exp.h global.h
 #	g++ -std=c++11 -c mainExp.cpp
 
-utScanner: mainScanner.o scanner.h utScanner.h
-	g++ -o utScanner mainScanner.o -lgtest -lpthread
-mainScanner.o: mainScanner.cpp utScanner.h scanner.h  atom.h struct.h variable.h
+utScanner: mainScanner.o atom.o scanner.h utScanner.h utParser.h parser.h
+	g++ -o utScanner mainScanner.o atom.o -lgtest -lpthread
+mainScanner.o: mainScanner.cpp utScanner.h scanner.h  atom.h struct.h variable.h  utParser.h parser.h
 		g++ -std=c++11 -c mainScanner.cpp
 
 #utTerm: mainTerm.o term.o struct.o var.o list.o
