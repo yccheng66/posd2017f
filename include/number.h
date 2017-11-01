@@ -1,6 +1,7 @@
 #ifndef NUMBER_H
 #define NUMBER_H
 
+#include <iomanip>
 #include <sstream>
 #include "term.h"
 #include "variable.h"
