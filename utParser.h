@@ -23,4 +23,29 @@ TEST_F(ParserTest, createTerm_Num){
   ASSERT_EQ("123", parser.createTerm()->symbol());
 }
 
+TEST_F(ParserTest, createTerm_Atom)
+{
+  Scanner scanner("tom");
+  Parser parser(scanner);
+  ASSERT_EQ("tom", parser.createTerm()->symbol());
+}
+
+TEST_F(ParserTest, createArgs)
+{
+  Scanner scanner("1, X, tom");
+  Parser parser(scanner);
+  vector<Term*> terms = parser.getArgs();
+  ASSERT_EQ("1", terms[0]->symbol());
+  ASSERT_EQ("X", terms[1]->symbol());
+  ASSERT_EQ("tom", terms[2]->symbol());
+
+}
+
+TEST_F(ParserTest, createTerms)
+{
+  Scanner scanner("s(1, X, tom)");
+  Parser parser(scanner);
+  ASSERT_EQ("s(1, X, tom)", parser.createTerm()->symbol());
+}
+
 #endif
