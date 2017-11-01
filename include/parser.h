@@ -4,18 +4,23 @@
 #include <string>
 #include <utility>
 #include "atom.h"
-#include "variable.h"
 #include "number.h"
+#include "struct.h"
+#include "variable.h"
 #include "scanner.h"
 using std::string;
 using std::pair;
 
-class Parser{
+class Parser
+{
 public:
   Parser(Scanner scanner);
-  Term* createTerm();
+  Term *createTerm();
+  vector<Term *> getArgs();
+
 private:
   Scanner _scanner;
-  Prolog* _prolog;
+  Prolog *_prolog;
+  pair<string, int> _currentToken;
 };
 #endif
