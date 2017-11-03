@@ -29,6 +29,12 @@ TEST_F(ParserTest, createTerm_Atom)
   Parser parser(scanner);
   ASSERT_EQ("tom", parser.createTerm()->symbol());
 }
+TEST_F(ParserTest, errorTerm)
+{
+  Scanner scanner("s(1, X, tom)");
+  Parser parser(scanner);
+  ASSERT_NE(nullptr, parser.createTerm());
+}
 
 TEST_F(ParserTest, createArgs)
 {
@@ -47,5 +53,19 @@ TEST_F(ParserTest, createTerms)
   Parser parser(scanner);
   ASSERT_EQ("s(1, X, tom)", parser.createTerm()->symbol());
 }
+
+// TEST_F(ParserTest, emptyStruct)
+// {
+//   Scanner scanner("s()");
+//   Parser parser(scanner);
+//   ASSERT_EQ("s()", parser.createTerm()->symbol());
+// }
+TEST_F(ParserTest, NestedStruct)
+{
+  Scanner scanner("s(s(1))");
+  Parser parser(scanner);
+  ASSERT_EQ("s(s(1))", parser.createTerm()->symbol());
+}
+
 
 #endif
