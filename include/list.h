@@ -7,22 +7,16 @@ using std::vector;
 class List : public Struct
 {
 public:
-  List(vector<Term *> args);
+  List(Term *head = nullptr, Term *tail = nullptr);
   string symbol();
   string value();
+  string structSymbol();
+  string structValue();
   List *getList();
-  /*List(vector<Term *> args, bool isConcat);
-  string symbol();
-  string value();
-  bool match(Term *term);
-  List *getList();
-  Term *args(int index);*/
 
 private:
-  /*bool preprocess(List concat, List other);
-  bool matchList(List *list, List *other);
-  bool _isConcat;
-  vector<Term *> _args;*/
+  const int _HEAD = 0;
+  const int _TAIL = 1;
 };
 
 #endif

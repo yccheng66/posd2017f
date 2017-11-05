@@ -1,7 +1,9 @@
 #include "../include/scanner.h"
+#include <iostream>
 
 Scanner::Scanner(string in) : _prolog(Prolog::getInstance()), _buffer(in), _position(0)
 {
+    //std::cout << "hello" << std::endl;
 }
 
 pair<string, int> Scanner::nextToken()

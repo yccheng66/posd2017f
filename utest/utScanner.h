@@ -17,6 +17,25 @@ class ScannerTest : public ::testing::Test
     }
 };
 
+TEST_F(ScannerTest, empty)
+{
+    /* If you want to call the constructor which has a default value. 
+     * Notice the following situation:
+     * When your class have two constructor A() and A(int a = 0), then
+     * your try to create an instance like this "A a". It will show the
+     * ambiguous error because the complier doesn't know which constructors
+     * should be called in this situation. */
+
+    /* The other issue for constructing is the instantiated way. If 
+     * you write the sentence A a() and try to call the public method
+     * of A. It will show the a.method is a nonclass method. But I don't
+     * know why it can't be instantiated to a. However, when you write the
+     * sentence like A* a = new A(). It will be no problem to call anything
+     * from A. */
+    Scanner s;
+    EXPECT_EQ(0, s.position());
+}
+
 TEST_F(ScannerTest, position)
 {
     // one, two, three spaces

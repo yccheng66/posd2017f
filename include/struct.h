@@ -19,8 +19,14 @@ public:
   Term *args(int index);
 
 protected:
+  Struct(Atom functor, Term *head, Term *tail);
   Atom _functor;
   vector<Term *> _args;
+
+private:
+  string _delimiter;
+  string _leftBrackets;
+  string _rightBrackets;
 };
 
 #endif

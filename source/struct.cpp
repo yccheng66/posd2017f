@@ -7,6 +7,7 @@ Struct::Struct(Atom functor, vector<Term *> args) : _functor(functor), _args(arg
 string Struct::symbol()
 {
     string ret = _functor.symbol() + "(";
+    //string delimiter = (_functor.symbol() == "." && _args.size() == 2) ? "|" : ", ";
     for (int i = 0; i < _args.size(); i++)
         ret += (((i > 0) ? ", " : "") + _args[i]->symbol());
     return ret + ")";
@@ -37,6 +38,10 @@ bool Struct::match(Term *term)
 Struct *Struct::getStruct()
 {
     return this;
+}
+
+Struct::Struct(Atom functor, Term *head, Term *tail) : _functor(functor), _args({head, tail})
+{
 }
 
 Atom Struct::functor()
