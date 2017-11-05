@@ -58,6 +58,20 @@ TEST_F(ParserTest, createTerm_Struct)
   EXPECT_EQ("s(1, X, tom)", parser.createTerm()->symbol());
 }
 
+TEST_F(ParserTest, emptyStruct)
+{
+  Scanner scanner("s()");
+  Parser parser(scanner);
+  ASSERT_EQ("s()", parser.createTerm()->symbol());
+}
+
+TEST_F(ParserTest, NestedStruct)
+{
+  Scanner scanner("s(s(1))");
+  Parser parser(scanner);
+  ASSERT_EQ("s(s(1))", parser.createTerm()->symbol());
+}
+
 TEST_F(ParserTest, createTerm_Nested_Struct)
 {
   Scanner scanner("s(s(X, s(1, s(tom))))");
