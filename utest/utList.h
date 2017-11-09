@@ -1,444 +1,290 @@
 #ifndef UTLIST_H
 #define UTLIST_H
 
-#include "../include/atom.h"
+/* unit testing of class list */
+// the atom.h, variable.h and struct.h have been included in list.h //
 #include "../include/number.h"
-#include "../include/variable.h"
-#include "../include/struct.h"
 #include "../include/list.h"
 
-// []
+// [] = .() //
+// [1] = .(1, []) //
+TEST(list, functorAndArgs)
+{
+    List e;
+    EXPECT_EQ(".", e.functor().symbol());
+    EXPECT_EQ(0, e.arity());
+    List l(new Number(1), &e);
+    EXPECT_EQ(".", l.functor().symbol());
+    EXPECT_EQ(2, l.arity());
+    EXPECT_EQ("1", l.args(0)->symbol());
+    EXPECT_EQ("[]", l.args(1)->symbol());
+}
+
+// [tom] = .(tom, []). //
+// H = tom. //
+TEST(list, head)
+{
+    List e;
+    List l(new Atom("tom"), &e);
+    EXPECT_EQ("tom", l.head()->symbol());
+}
+
+// [tom] = .(tom, []) //
+// T = [] //
+TEST(list, tail)
+{
+    List e;
+    List l(new Atom("tom"), &e);
+    EXPECT_EQ("[]", l.tail()->symbol());
+}
+
+// [] //
+// head = throw exception //
+TEST(list, headException)
+{
+    List e;
+    try
+    {
+        e.head();
+    }
+    catch (string e)
+    {
+        EXPECT_EQ("Accessing head in an empty list", e);
+    }
+}
+
+// [] //
+// tail = throw exception //
+TEST(list, tailException)
+{
+    List e;
+    try
+    {
+        e.tail();
+    }
+    catch (string e)
+    {
+        EXPECT_EQ("Accessing tail in an empty list", e);
+    }
+}
+
+// [] //
 TEST(list, emptyList)
 {
-    List list;
-    EXPECT_EQ("[]", list.symbol());
-    EXPECT_EQ(".", list.functor().symbol());
-    EXPECT_FALSE(list.args(0));
-}
-
-// [tom]
-TEST(list, symbolWithOneArgs)
-{
-    Atom emptyList("[]");
-    Atom tom("tom");
-    List list(&tom, &emptyList);
-    EXPECT_EQ("[tom]", list.symbol());
-    EXPECT_EQ("tom", list.args(0)->symbol());
-    EXPECT_EQ("[]", list.args(1)->symbol());
-}
-
-// [tom, jerry, marry] //
-TEST(list, symbolWithMultipleArgs)
-{
-    Atom emptyList("[]");
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom marry("marry");
-    List l(&marry, &emptyList);
-    List l2(&jerry, &l);
-    List l3(&tom, &l2);
-    EXPECT_EQ("[tom, jerry, marry]", l3.symbol());
-}
-
-// [tom]
-TEST(list, valueWithOneArgs)
-{
-    Atom emptyList("[]");
-    Atom tom("tom");
-    List list(&tom, &emptyList);
-    EXPECT_EQ("[tom]", list.value());
-    EXPECT_EQ("tom", list.args(0)->value());
-    EXPECT_EQ("[]", list.args(1)->value());
-}
-
-// [tom, jerry, marry] //
-TEST(list, valueWithMultipleArgs)
-{
-    Atom emptyList("[]");
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom marry("marry");
-    List l(&marry, &emptyList);
-    List l2(&jerry, &l);
-    List l3(&tom, &l2);
-    EXPECT_EQ("[tom, jerry, marry]", l3.value());
-}
-
-// [1, X, tom, s(qq), [yee]]
-TEST(list, symbolWithArgs)
-{
-    Atom emptyList("[]");
-    Atom tom("tom");
-    Atom qq("qq");
-    Atom yee("yee");
-    Number n(1);
-    Variable X("X");
-    Struct s(Atom("s"), {&qq});
-    List yeeList(&yee, &emptyList);
-    List l0(&yeeList, &emptyList);
-    List l1(&s, &l0);
-    List l2(&tom, &l1);
-    List l3(&X, &l2);
-    List l4(&n, &l3);
-    EXPECT_EQ("[1, X, tom, s(qq), [yee]]", l4.symbol());
-}
-
-// [1, X, tom, s(qq), [yee]]
-TEST(list, valueWithArgs)
-{
-    Atom emptyList("[]");
-    Atom tom("tom");
-    Atom qq("qq");
-    Atom yee("yee");
-    Number n(1);
-    Variable X("X");
-    Struct s(Atom("s"), {&qq});
-    List yeeList(&yee, &emptyList);
-    List l0(&yeeList, &emptyList);
-    List l1(&s, &l0);
-    List l2(&tom, &l1);
-    List l3(&X, &l2);
-    List l4(&n, &l3);
-    EXPECT_EQ("[1, X, tom, s(qq), [yee]]", l4.value());
+    List l;
+    EXPECT_EQ("[]", l.symbol());
 }
 
 // [1, X, tom] //
-TEST(list, structSymbol)
+TEST(list, listWithArgs)
 {
-    Number n(1);
-    Variable X("X");
-    Atom tom("tom");
-    Atom emptyList("[]");
-    List l0(&tom, &emptyList);
-    List l1(&X, &l0);
-    List l2(&n, &l1);
-    EXPECT_EQ(".(1, .(X, .(tom, [])))", l2.structSymbol());
+    List e;
+    List l0(new Atom("tom"), &e);
+    List l1(new Variable("X"), &l0);
+    List l2(new Number(1), &l1);
+    EXPECT_EQ("[1, X, tom]", l2.symbol());
 }
 
-// [1, X, tom] //
-TEST(list, structValue)
+// [[[[]]]] //
+TEST(list, nestedEmptyList)
 {
-    Number n(1);
-    Variable X("X");
-    Atom tom("tom");
-    Atom emptyList("[]");
-    List l0(&tom, &emptyList);
-    List l1(&X, &l0);
-    List l2(&n, &l1);
-    EXPECT_EQ(".(1, .(X, .(tom, [])))", l2.structValue());
+    List e;
+    List l0(&e, &e);
+    List l1(&l0, &e);
+    List l2(&l1, &e);
+    EXPECT_EQ("[[[[]]]]", l2.symbol());
 }
 
-// -? [tom] = [H | T]
-// H = tom, T = []
-TEST(list, headTailMatch)
+// [tom, [1, [[], s()], X]] //
+// .(tom, .(.(1, .(.([], .(s(), [])), .(X, []))), []))  //
+TEST(list, nestedList)
 {
     Atom tom("tom");
-    Atom emptyList("[]");
+    Number n(1);
+    Variable X("X");
+    Struct s(Atom("s"), {});
+    List e;
+    List l0(&s, &e);
+    List l1(&e, &l0);
+    List l2(&X, &e);
+    List l3(&l1, &l2);
+    List l4(&n, &l3);
+    List l5(&l4, &e);
+    List l6(&tom, &l5);
+    EXPECT_EQ("[tom, [1, [[], s()], X]]", l6.symbol());
+}
+
+// -? [tom] = tom. //
+// false. //
+// -? [tom] = 1. //
+// false. //
+// [tom] = s(tom) //
+// false. //
+TEST(list, matchNonList)
+{
+    Atom tom("tom");
+    Number n(1);
+    Struct s(Atom("s"), {&tom});
+    List e;
+    List l(&tom, &e);
+    EXPECT_FALSE(l.match(&tom));
+    EXPECT_FALSE(l.match(&n));
+    EXPECT_FALSE(l.match(&s));
+}
+
+// -? [tom] = []. //
+// false. //
+TEST(list, matchDifferentArgSize)
+{
+    List e;
+    List l(new Atom("tom"), &e);
+    EXPECT_FALSE(l.match(&e));
+}
+
+// -? [tom] = [jerry]. //
+// false. //
+TEST(list, matchDifferentArgs)
+{
+    List e;
+    List l1(new Atom("tom"), &e);
+    List l2(new Atom("jerry"), &e);
+    EXPECT_FALSE(l1.match(&l2));
+}
+
+// -? [tom, 1, X] = [tom, 1, X]. //
+// true. //
+TEST(list, matchSuccess)
+{
+    Atom tom("tom");
+    Number n(1);
+    Variable X("X");
+    List e;             // []
+    List l0(&X, &e);    // .(X, [])
+    List l1(&n, &l0);   // .(1, .(X, []))
+    List l2(&tom, &l1); // .(tom, .(1, .(X, [])))
+    List l3(&tom, &l1); // .(tom, .(1, .(X, [])))
+    EXPECT_TRUE(l2.match(&l3));
+}
+
+// -? [tom, 1, X] = [tom, 1, s()]. //
+// X = s(). //
+TEST(list, matchWithVariableArg)
+{
+    Atom tom("tom");
+    Number n(1);
+    Variable X("X");
+    Struct s(Atom("s"), {});
+    List e;
+    List l0(&X, &e);
+    List l1(&n, &l0);
+    List l2(&tom, &l1);
+    List l3(&s, &e);
+    List l4(&n, &l3);
+    List l5(&tom, &l4);
+    EXPECT_TRUE(l2.match(&l5));
+    EXPECT_EQ("s()", X.value());
+    EXPECT_EQ("[tom, 1, s()]", l2.value());
+}
+
+// -? [tom, X] = [X, tom]. //
+// X = tom. //
+TEST(list, matchWithVariableArg2)
+{
+    Atom tom("tom");
+    Variable X("X");
+    List e;
+    List l0(&X, &e);
+    List l1(&tom, &l0);
+    List l2(&tom, &e);
+    List l3(&X, &l2);
+    EXPECT_TRUE(l1.match(&l3));
+    EXPECT_EQ("tom", X.value());
+}
+
+// -? [tom, X] = [X, 1]. //
+// false. //
+TEST(list, matchWithVariableArg3)
+{
+    Atom tom("tom");
+    Number n(1);
+    Variable X("X");
+    List e;
+    List l0(&X, &e);
+    List l1(&tom, &l0);
+    List l2(&n, &e);
+    List l3(&X, &l2);
+    EXPECT_FALSE(l1.match(&l3));
+    EXPECT_EQ("tom", X.value());
+}
+
+// -? [1] = [H|T]. //
+// H = 1, T = []. //
+TEST(list, matchHeadAndTail)
+{
+    List e;
+    Number n(1);
     Variable H("H");
     Variable T("T");
-    List l(&tom, &emptyList);
+    List l(&n, &e);
     Struct s(Atom("."), {&H, &T});
     EXPECT_TRUE(l.match(&s));
-    EXPECT_EQ("tom", H.value());
+    EXPECT_EQ("1", H.value());
     EXPECT_EQ("[]", T.value());
 }
 
-// [tom, jerry] = [H | T]
-// H = tom, T = [jerry]
-TEST(list, headTailMatch2)
+// -? [1, 2] = [H|T]. //
+// H = 1, T = [2]. //
+TEST(list, matchHeadAndTail2)
 {
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom emptyList("[]");
+    List e;
+    Number n1(1);
+    Number n2(2);
     Variable H("H");
     Variable T("T");
-    List l0(&jerry, &emptyList);
-    List l1(&tom, &l0);
+    List l0(&n2, &e);
+    List l1(&n1, &l0);
     Struct s(Atom("."), {&H, &T});
     EXPECT_TRUE(l1.match(&s));
-    EXPECT_EQ("tom", H.value());
-    EXPECT_EQ("[jerry]", T.value());
+    EXPECT_EQ("1", H.value());
+    EXPECT_EQ("[2]", T.value());
 }
 
-// [tom, s(X)] = [H | T]
-// H = tom, T = [s(X)]
-TEST(list, headTailMatch3)
+// -? [1, 2] = [1, H|T]. //
+// H = 2, T = []. //
+TEST(list, matchHeadAndTail3)
 {
-    Atom tom("tom");
-    Atom emptyList("[]");
-    Variable X("X");
+    List e;
+    Number n1(1);
+    Number n2(2);
     Variable H("H");
     Variable T("T");
-    Struct sub(Atom("s"), {&X});
-    List l0(&sub, &emptyList);
-    List l1(&tom, &l0);
-    Struct s(Atom("."), {&H, &T});
-    EXPECT_TRUE(l1.match(&s));
-    EXPECT_EQ("tom", H.value());
-    EXPECT_EQ("[s(X)]", T.value());
-}
-
-// [tom, jerry, s(X), QQ] = [tom, jerry | T]
-// T = [s(X), QQ]
-TEST(list, headTailMatch4)
-{
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom emptyList("[]");
-    Variable X("X");
-    Variable QQ("QQ");
-    Variable T("T");
-    Struct sub(Atom("s"), {&X});
-    List l0(&QQ, &emptyList);
-    List l1(&sub, &l0);
-    List l2(&jerry, &l1);
-    List l3(&tom, &l2);
-    Struct s(Atom("."), {&jerry, &T});
-    List comp(&tom, &s);
-    EXPECT_TRUE(l3.match(&comp));
-    EXPECT_EQ("[s(X), QQ]", T.value());
-}
-
-/*// [tom, jerry, marry]
-TEST(list, value)
-{
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom marry("marry");
-    Atom emptyList("[]");
-    List l({&marry, &emptyList});
-    List l2({&jerry, &l});
-    List l3({&tom, &l2});
-    EXPECT_EQ("[tom, jerry, marry]", l3.value());
-}*/
-
-// -? [tom, jerry, marry] = [H|T].
-//  H = tom, T = [jerry, marry]
-/*TEST(list, match)
-{
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom marry("marry");
-    Atom emptyList("[]");
-    List l({&marry, &emptyList});
-    List l2({&jerry, &l});
-    List l3({&tom, &l2});
-    Variable H("H");
-    Variable T("T");
-    Struct s(Atom("."), {&H, &T});
-    EXPECT_TRUE(l3.match(&s));
-    EXPECT_EQ("tom", H.value());
-    EXPECT_EQ("[jerry, marry]", T.value());
-}*/
-/*TEST(list, symbol)
-{
-    List list({}, false);
-    EXPECT_EQ("[]", list.symbol());
-    Atom tom("tom");
-    Number n1(1);
-    Variable X("X");
-    Struct s(Atom("s"), {&X});
-    List l({&tom, &n1, &X, &s}, false);
-    EXPECT_EQ("[tom, 1, X, s(X)]", l.symbol());
-}
-
-TEST(list, concatSymbol)
-{
-    Atom tom("tom");
-    Number n1(1);
-    Variable X("X");
-    Struct s(Atom("s"), {&X});
-    List l({&tom, &n1, &X, &s}, true);
-    EXPECT_EQ("[tom, 1, X|s(X)]", l.symbol());
-}
-
-// [tom, 1, X, s(X)].
-TEST(list, value)
-{
-    Atom tom("tom");
-    Number n1(1);
-    Variable X("X");
-    Struct s(Atom("s"), {&X});
-    List l({&tom, &n1, &X, &s}, false);
-    EXPECT_EQ("[tom, 1, X, s(X)]", l.value());
-}
-
-// [tom, 1, X|s(X)].
-TEST(list, concatValue)
-{
-    Atom tom("tom");
-    Number n1(1);
-    Variable X("X");
-    Struct s(Atom("s"), {&X});
-    List l({&tom, &n1, &X, &s}, true);
-    EXPECT_EQ("[tom, 1, X|s(X)]", l.value());
-}
-
-// X = 1, [tom, 1, X, s(X)].
-TEST(list, valueWithMatch)
-{
-    Atom tom("tom");
-    Number n1(1);
-    Variable X("X");
-    Struct s(Atom("s"), {&X});
-    X.match(&n1);
-    List l({&tom, &n1, &X, &s}, false);
-    EXPECT_EQ("[tom, 1, 1, s(1)]", l.value());
-}
-
-// X = 1, [tom, 1, X|s(X)].
-TEST(list, concatValueWithMatch)
-{
-    Atom tom("tom");
-    Number n1(1);
-    Variable X("X");
-    Struct s(Atom("s"), {&X});
-    X.match(&n1);
-    List l({&tom, &n1, &X, &s}, true);
-    EXPECT_EQ("[tom, 1, 1|s(1)]", l.value());
-}
-
-// -? X = [X].
-// X = [X].
-TEST(list, match)
-{
-    Variable X("X");
-    List l({&X}, false);
-    EXPECT_TRUE(l.match(&X));
-    EXPECT_EQ("[X]", X.value());
-}
-
-// -? X = [1, X, tom, s(X)], X = Y.
-// X = [1, X, tom, s(X)].
-TEST(list, match2)
-{
-    Number n1(1);
-    Variable X("X");
-    Atom tom("tom");
-    Struct s(Atom("s"), {&X});
-    Variable Y("Y");
-    List l({&n1, &X, &tom, &s}, false);
-    EXPECT_TRUE(X.match(&l));
-    EXPECT_TRUE(X.match(&Y));
-    //EXPECT_EQ("[1, X, tom, s(X)]", X.value());
-    //EXPECT_EQ("[1, X, tom, s(X)]", Y.value());
-}
-
-// -? [tom, jerry, marry] =  [H|T].
-// H = tom, Y = [jerry, marry].
-TEST(list, concatMatch)
-{
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom marry("marry");
-    List l({&tom, &jerry, &marry}, false);
-    Variable H("H");
-    Variable T("T");
-    List concat({&H, &T}, true);
-    EXPECT_TRUE(l.match(&concat));
-    EXPECT_EQ("tom", concat.args(0)->value());
-    EXPECT_EQ("[jerry, marry]", concat.args(1)->value());
-}
-
-// -? [tom, jerry, marry] = [tom, jerry|T].
-// T = [marry].
-TEST(list, concatMatch2)
-{
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom marry("marry");
-    Variable T("T");
-    List l({&tom, &jerry, &marry}, false);
-    List concat({&tom, &jerry, &T}, true);
-    EXPECT_TRUE(l.match(&concat));
-    EXPECT_EQ("[marry]", concat.args(2)->value());
-}
-
-// -? [tom, jerry] = [tom, jerry|T].
-// T = [].
-TEST(list, concatMatch3)
-{
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Variable T("T");
-    List l({&tom, &jerry}, false);
-    List concat({&tom, &jerry, &T}, true);
-    EXPECT_TRUE(l.match(&concat));
-    EXPECT_EQ("[]", concat.args(2)->value());
-}
-
-// -? [tom, jerry, marry] = [X|[Y|Z]].
-// X = tom, Y = jerry, Z = [marry].
-TEST(list, concatMatch4)
-{
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom marry("marry");
-    List l({&tom, &jerry, &marry}, false);
-    Variable X("X");
-    Variable Y("Y");
-    Variable Z("Z");
-    List subConcat({&Y, &Z}, true);
-    List concat({&X, &subConcat}, true);
-    EXPECT_TRUE(l.match(&concat));
-    EXPECT_EQ("tom", concat.args(0)->value());
-    EXPECT_EQ("jerry", subConcat.args(0)->value());
-    EXPECT_EQ("[marry]", subConcat.args(1)->value());
-}
-
-// -? [tom, jerry] = [H|jerry].
-// false.
-TEST(list, concatMatch5)
-{
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Variable H("H");
-    List l({&tom, &jerry}, false);
-    List concat({&H, &jerry}, true);
-    EXPECT_FALSE(l.match(&concat));
-}
-
-// -? [[tom, jerry, marry]|[H|T]] = [[X|[Y|Z]]|[randy]]
-// H = randy, T = [], X = tom, Y = jerry, Z = [marry].
-TEST(list, concatMatch6)
-{
-    Atom tom("tom");
-    Atom jerry("jerry");
-    Atom marry("marry");
-    Atom randy("randy");
-    Variable H("H");
-    Variable T("T");
-    Variable X("X");
-    Variable Y("Y");
-    Variable Z("Z");
-    List sublist({&tom, &jerry, &marry}, false);
-    List sublist2({&H, &T}, true);
-    List list({&sublist, &sublist2}, true);
-    List sublist3({&Y, &Z}, true);
-    List sublist4({&X, &sublist3}, true);
-    List sublist5({&randy}, false);
-    List list2({&sublist4, &sublist5}, true);
-    EXPECT_TRUE(list.match(&list2));
-    EXPECT_EQ("randy", H.value());
+    List l0(&n2, &e);
+    List l1(&n1, &l0);
+    Struct s0(Atom("."), {&H, &T});
+    Struct s1(Atom("."), {&n1, &s0});
+    EXPECT_TRUE(l1.match(&s1));
+    EXPECT_EQ("2", H.value());
     EXPECT_EQ("[]", T.value());
-    EXPECT_EQ("tom", X.value());
-    EXPECT_EQ("jerry", Y.value());
-    EXPECT_EQ("[marry]", Z.value());
 }
 
-// -? [H|T]=[X|Y].
-// H = X, T = Y.
-TEST(list, concatMatch7)
+// -? [1, 2] = [X|[Y|Z]]. //
+// X = 1, Y = 2, Z = []. //
+TEST(list, matchNestedHeadAndTail)
 {
-    Variable H("H");
-    Variable T("T");
+    Number n1(1);
+    Number n2(2);
     Variable X("X");
     Variable Y("Y");
-    List list({&H, &T}, true);
-    List list2({&X, &Y}, true);
-    EXPECT_TRUE(list.match(&list2));
-    EXPECT_EQ("X", H.value());
-    EXPECT_EQ("Y", T.value());
-}*/
+    Variable Z("Z");
+    List e;
+    List l0(&n2, &e);
+    List l1(&n1, &l0);
+    Struct s0(Atom("."), {&Y, &Z});
+    Struct s1(Atom("."), {&X, &s0});
+    EXPECT_TRUE(l1.match(&s1));
+    EXPECT_EQ("1", X.value());
+    EXPECT_EQ("2", Y.value());
+    EXPECT_EQ("[]", Z.value());
+}
 
 #endif

@@ -18,8 +18,6 @@ public:
   virtual Variable *getVariable();
 
 protected:
-  //bool matchVariable(Variable *variable);
-
 private:
 };
 

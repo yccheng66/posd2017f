@@ -2,18 +2,18 @@
 #define UTSCANNER_H
 
 #include "../include/scanner.h"
-#include "../include/prolog.h"
+#include "../include/utility.h"
 
 class ScannerTest : public ::testing::Test
 {
   public:
-    Prolog *prolog;
+    Utility *utility;
     pair<string, int> token;
 
   protected:
     void SetUp()
     {
-        prolog = Prolog::getInstance();
+        utility = Utility::getInstance();
     }
 };
 
@@ -22,16 +22,15 @@ TEST_F(ScannerTest, empty)
     /* If you want to call the constructor which has a default value. 
      * Notice the following situation:
      * When your class have two constructor A() and A(int a = 0), then
-     * your try to create an instance like this "A a". It will show the
+     * you try to create an instance like this "A a". It will show the
      * ambiguous error because the complier doesn't know which constructors
      * should be called in this situation. */
 
-    /* The other issue for constructing is the instantiated way. If 
+    /* The other issue of constructing is the instantiation. If 
      * you write the sentence A a() and try to call the public method
      * of A. It will show the a.method is a nonclass method. But I don't
-     * know why it can't be instantiated to a. However, when you write the
-     * sentence like A* a = new A(). It will be no problem to call anything
-     * from A. */
+     * know why it can't be instantiated. However, when you write the
+     * sentence like A* a = new A(), then everything will be ok. */
     Scanner s;
     EXPECT_EQ(0, s.position());
 }
@@ -72,7 +71,7 @@ TEST_F(ScannerTest, nextTokenEOS)
     EXPECT_EQ(0, scanner.position());
     token = scanner.nextToken();
     EXPECT_EQ("", token.first);
-    EXPECT_EQ(prolog->EOS, token.second);
+    EXPECT_EQ(utility->EOS, token.second);
     EXPECT_EQ(4, scanner.position());
 }
 
@@ -83,7 +82,7 @@ TEST_F(ScannerTest, nextTokenEOS2)
     EXPECT_EQ(0, scanner.position());
     token = scanner.nextToken();
     EXPECT_EQ("", token.first);
-    EXPECT_EQ(prolog->EOS, token.second);
+    EXPECT_EQ(utility->EOS, token.second);
     EXPECT_EQ(0, scanner.position());
 }
 
@@ -93,13 +92,13 @@ TEST_F(ScannerTest, nextTokenNumber)
     Scanner s("12.45, 8763");
     token = s.nextToken();
     EXPECT_EQ("12.45", token.first);
-    EXPECT_EQ(prolog->NUMBER, token.second);
+    EXPECT_EQ(utility->NUMBER, token.second);
     token = s.nextToken();
     EXPECT_EQ(",", token.first);
     EXPECT_EQ(',', token.second);
     token = s.nextToken();
     EXPECT_EQ("8763", token.first);
-    EXPECT_EQ(prolog->NUMBER, token.second);
+    EXPECT_EQ(utility->NUMBER, token.second);
 }
 
 TEST_F(ScannerTest, nextTokenAtom)
@@ -109,7 +108,7 @@ TEST_F(ScannerTest, nextTokenAtom)
     EXPECT_EQ(0, scanner.position());
     token = scanner.nextToken();
     EXPECT_EQ("tom", token.first);
-    EXPECT_EQ(prolog->ATOM, token.second);
+    EXPECT_EQ(utility->ATOM, token.second);
     EXPECT_EQ(3, scanner.position());
 }
 
@@ -120,7 +119,7 @@ TEST_F(ScannerTest, nextTokenVar)
     EXPECT_EQ(0, scanner.position());
     token = scanner.nextToken();
     EXPECT_EQ("Date", token.first);
-    EXPECT_EQ(prolog->VARIABLE, token.second);
+    EXPECT_EQ(utility->VARIABLE, token.second);
     EXPECT_EQ(4, scanner.position());
 }
 
@@ -134,7 +133,7 @@ TEST_F(ScannerTest, nextTokenChar)
     EXPECT_EQ(4, scanner.position());
     token = scanner.nextToken();
     EXPECT_EQ("", token.first);
-    EXPECT_EQ(prolog->EOS, token.second);
+    EXPECT_EQ(utility->EOS, token.second);
     EXPECT_EQ(4, scanner.position());
 }
 
@@ -145,7 +144,7 @@ TEST_F(ScannerTest, nextTokenAtomSC)
     EXPECT_EQ(0, scanner.position());
     token = scanner.nextToken();
     EXPECT_EQ(".*-><&$@\\?", token.first);
-    EXPECT_EQ(prolog->ATOMSC, token.second);
+    EXPECT_EQ(utility->ATOMSC, token.second);
     EXPECT_EQ(10, scanner.position());
 }
 

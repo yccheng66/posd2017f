@@ -3,7 +3,7 @@
 
 #include <utility>
 #include <string>
-#include "prolog.h"
+#include "utility.h"
 using std::string;
 using std::pair;
 
@@ -22,7 +22,7 @@ public:
   int position();
 
 private:
-  Prolog *_prolog;
+  Utility *_utility;
   string _buffer;
   int _position;
 };

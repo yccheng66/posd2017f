@@ -1,9 +1,9 @@
-#ifndef PROLOG_H
-#define PROLOG_H
+#ifndef UTILITY_H
+#define UTILITY_H
 
-#include "atom.h"
+#include "list.h"
 
-class Prolog
+class Utility
 {
 public:
   const int NONE = -1;
@@ -12,15 +12,14 @@ public:
   const int ATOM = 257;
   const int ATOMSC = 258;
   const int VARIABLE = 259;
-  Atom EMPTY_LIST = Atom("[]");
-  static Prolog *getInstance();
+  static Utility *getInstance();
   bool isSpecialChar(char c);
 
 protected:
-  Prolog();
+  Utility();
 
 private:
-  static Prolog *_instance;
+  static Utility *_instance;
 };
 
 #endif

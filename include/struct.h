@@ -11,22 +11,23 @@ class Struct : public Term
 {
 public:
   Struct(Atom functor, vector<Term *> args);
-  virtual string symbol();
-  virtual string value();
+  string symbol();
+  string value();
   bool match(Term *term);
   Struct *getStruct();
   Atom functor();
   Term *args(int index);
+  int arity();
+  bool isSpecialStruct();
 
 protected:
-  Struct(Atom functor, Term *head, Term *tail);
   Atom _functor;
   vector<Term *> _args;
+  string openParenthesesOutput(bool isSymbol, bool isDomain = false);
+  string openBracketsOutput(bool isSymbol);
+  string argOutput(int index, bool isSymbol, bool isDomain = false);
 
 private:
-  string _delimiter;
-  string _leftBrackets;
-  string _rightBrackets;
 };
 
 #endif

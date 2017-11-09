@@ -2,21 +2,19 @@
 #define LIST_H
 
 #include "struct.h"
-using std::vector;
 
 class List : public Struct
 {
 public:
-  List(Term *head = nullptr, Term *tail = nullptr);
-  string symbol();
-  string value();
-  string structSymbol();
-  string structValue();
+  List();
+  List(Term *head, List *tail);
   List *getList();
+  string domainSymbol();
+  string domainValue();
+  Term *head();
+  List *tail();
 
 private:
-  const int _HEAD = 0;
-  const int _TAIL = 1;
 };
 
 #endif

@@ -36,62 +36,62 @@ Variable *Variable::getVariable()
     return this;
 }
 
+// Get correct symbol when output //
 string Variable::getCorrectSymbol()
 {
-    Variable *variable = this;
-    Variable *termVariable = _instance->getVariable();
-    for (; termVariable; variable = termVariable, termVariable = variable->_instance->getVariable())
+    Variable *current = this;
+    for (; isVariable(current->_instance); current = current->_instance->getVariable())
         ;
-    return variable->symbol();
+    return current->symbol();
 }
 
 bool Variable::matchInstance(Term *term)
 {
-    Variable *variable = this;
-    Term *instance = variable->_instance;
-    for (; instance && (variable = instance->getVariable()); instance = variable->_instance)
+    Variable *current = this;
+    for (; isVariable(current->_instance); current = current->_instance->getVariable())
         ;
 
-    if (instance)
-    {
-        //std::cout << instance->symbol() << std::endl;
-        return instance->match(term);
-    }
-    instantiate(term, variable);
+    if (current->_instance)
+        return current->_instance->match(term);
+    instantiate(term, current);
     return true;
 }
 
+// Instantiate the instance of variable //
 void Variable::instantiate(Term *term, Variable *variable)
 {
-    //std::cout << "instantiated variable = " << variable->symbol() << std::endl;
-    //std::cout << "instantiated term = " << term->symbol() << std::endl;
     variable->_instance = term;
     Variable *termVariable = term->getVariable();
     if (termVariable)
         termVariable->_referencer = variable;
 }
 
-// Detect if the variable will cause a cycle or not //
-bool Variable::detectCycle(Variable *variable)
+// Detect if the matcher will cause a cycle or not //
+bool Variable::detectCycle(Variable *matcher)
 {
-    return (variable == this || isExistInInstances(variable) || isExistInReferencers(variable)); // || isExistInInstances(variable) || isExistInReferencers(variable));
+    return (matcher == this || isExistInInstances(matcher) || isExistInReferencers(matcher));
 }
 
-bool Variable::isExistInInstances(Variable *variable)
+// Detect if the matcher exists in the instances or not //
+bool Variable::isExistInInstances(Variable *matcher)
 {
-    Term *instance = _instance;
-    Variable *comparison;
-    for (; instance && (comparison = instance->getVariable()); instance = comparison->_instance)
-        if (comparison == variable)
+    Term *member = _instance;
+    for (; isVariable(member); member = member->getVariable()->_instance)
+        if (matcher == member)
             return true;
     return false;
 }
 
-bool Variable::isExistInReferencers(Variable *variable)
+// Detect if the matcher exists in the referencers or not //
+bool Variable::isExistInReferencers(Variable *matcher)
 {
-    Variable *comparison = _referencer;
-    for (; comparison; comparison = comparison->_referencer)
-        if (comparison == variable)
+    for (Variable *member = _referencer; member; member = member->_referencer)
+        if (matcher == member)
             return true;
     return false;
+}
+
+bool Variable::isVariable(Term *term)
+{
+    return (term && term->getVariable());
 }

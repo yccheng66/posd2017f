@@ -1,85 +1,89 @@
 #include "../include/parser.h"
 #include <iostream>
 
-Parser::Parser(Scanner scanner) : _scanner(scanner), _prolog(Prolog::getInstance())
+Parser::Parser(Scanner scanner) : _scanner(scanner), _utility(Utility::getInstance())
 {
 }
 
 Term *Parser::createTerm()
 {
   _currentToken = _scanner.nextToken();
-  if (_currentToken.second == _prolog->VARIABLE)
+  if (_currentToken.second == _utility->VARIABLE)
     return new Variable(_currentToken.first);
-  else if (_currentToken.second == _prolog->NUMBER)
+  else if (_currentToken.second == _utility->NUMBER)
     return new Number(stod(_currentToken.first));
-  else if (_currentToken.second == _prolog->ATOM || _currentToken.second == _prolog->ATOMSC)
-  {
-    Atom *atom = new Atom(_currentToken.first);
-    if (_scanner.currentChar() == '(')
-      return buildStruct(atom);
-    return atom;
-  }
+  else if (_currentToken.second == _utility->ATOM || _currentToken.second == _utility->ATOMSC)
+    return actualTermOfAtomToken();
   else if (_currentToken.second == '[')
-    return buildListOrStruct();
+    return buildStructByBrackets();
   else
     return nullptr;
 }
 
-Term *Parser::buildStruct(Atom *functor)
+Term *Parser::actualTermOfAtomToken()
 {
-  vector<Term *> args = getArgs();
-  /* extract right parentheses */
-  if (_scanner.nextToken().second == ')')
-  {
-    if (functor->symbol() == "." && args.size() == 2 && args[1]->match(&(_prolog->EMPTY_LIST)))
-      return new List(args[0], args[1]);
-    return new Struct(*functor, args);
-  }
-  throw string("unexpected token");
-  /* Throw the syntax error when the current char is not right parentheses */
+  Atom *atom = new Atom(_currentToken.first);
+  if (_scanner.currentChar() == '(')
+    return buildStructByParentheses(atom);
+  return atom;
 }
 
-Term *Parser::buildListOrStruct()
+Term *Parser::buildStructByParentheses(Atom *functor)
+{
+  const int HEAD = 0;
+  const int TAIL = 1;
+  _scanner.nextToken(); // extract left parentheses //
+  vector<Term *> args = getArgs();
+  if (_scanner.nextToken().second == ')')
+  {
+    // .(1, []) is a list, .(1, 2) is not a list //
+    if (functor->symbol() == "." && args.size() == 2 && args[TAIL]->getList())
+      return new List(args[HEAD], args[TAIL]->getList());
+    return new Struct(*functor, args);
+  }
+  throw string("')' was missing when building a parentheses struct");
+}
+
+Term *Parser::buildStructByBrackets()
 {
   vector<Term *> args = getArgs();
-  Term *tail = (args.size() == 0) ? nullptr : getTail();
-  if (_currentToken.second == ']')
+  Term *tail = getTailBeforeRightBrackets();
+  if (_scanner.nextToken().second == ']')
   {
     for (int i = args.size() - 1; i >= 0; i--)
-    {
-      if (tail->getList() || tail->match(&_prolog->EMPTY_LIST))
-        tail = new List(args[i], tail);
-      else
-        tail = new Struct(Atom("."), {args[i], tail});
-    }
-    return (tail) ? tail : new List();
+      tail = (tail->getList()) ? new List(args[i], tail->getList()) : new Struct(Atom("."), {args[i], tail});
+    return tail;
   }
-  throw string("unexpected token");
+  throw string("']' was missing when building a brackets struct");
 }
 
 vector<Term *> Parser::getArgs()
 {
   vector<Term *> args;
   Term *term;
-  /* Extract left parentheses */
-  if (_scanner.currentChar() == '(')
-    _scanner.nextToken();
-  /* If current char is not right parentheses, then try to create term from next token. Check the 
-     token is a comma or not when creating fail */
-  while (_scanner.currentChar() != ')' && ((term = createTerm()) || _currentToken.second == ','))
+  /* If the current char is not the end of struct, try to create term from next
+   * token. Check if the token is comma when creating fail. */
+  while (!isEndOfStruct() && ((term = createTerm()) || _currentToken.second == ','))
     if (term)
       args.push_back(term);
   return args;
 }
 
-Term *Parser::getTail()
+bool Parser::isEndOfStruct()
 {
-  Term *tail;
+  /* If you forget to extract space before next token, then the parser will 
+   * throw exception in the following situations:
+   * [      ], s(      ),  s(1      ), [1       ], etc.
+   * because the current char is not a right parentheses or brackets, so it
+   * will be extract by getArgs. */
+
+  _scanner.skipLeadingWhiteSpace();
+  return (_scanner.currentChar() == ')' || _scanner.currentChar() == ']');
+}
+
+Term *Parser::getTailBeforeRightBrackets()
+{
   if (_currentToken.second == '|')
-  {
-    tail = createTerm();
-    _currentToken = _scanner.nextToken();
-  }
-  tail = &_prolog->EMPTY_LIST;
-  return tail;
+    return createTerm();
+  return new List();
 }

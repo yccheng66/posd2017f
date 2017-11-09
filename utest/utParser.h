@@ -1,21 +1,20 @@
 #ifndef UTPARSER_H
 #define UTPARSER_H
 
-#include "../include/scanner.h"
 #include "../include/parser.h"
-#include "../include/prolog.h"
+#include "../include/utility.h"
 #include <iostream>
 
 class ParserTest : public ::testing::Test
 {
 public:
-  Prolog *prolog;
+  Utility *utility;
   pair<string, int> token;
 
 protected:
   void SetUp()
   {
-    prolog = Prolog::getInstance();
+    utility = Utility::getInstance();
   }
 };
 
@@ -56,20 +55,6 @@ TEST_F(ParserTest, createTerm_Struct)
   Scanner scanner("s(1, X, tom)");
   Parser parser(scanner);
   EXPECT_EQ("s(1, X, tom)", parser.createTerm()->symbol());
-}
-
-TEST_F(ParserTest, emptyStruct)
-{
-  Scanner scanner("s()");
-  Parser parser(scanner);
-  ASSERT_EQ("s()", parser.createTerm()->symbol());
-}
-
-TEST_F(ParserTest, NestedStruct)
-{
-  Scanner scanner("s(s(1))");
-  Parser parser(scanner);
-  ASSERT_EQ("s(s(1))", parser.createTerm()->symbol());
 }
 
 TEST_F(ParserTest, createTerm_Nested_Struct)
@@ -122,7 +107,7 @@ TEST_F(ParserTest, listOfTermsTwoNumbers)
 // When parser parses all terms via scanner.
 // Then it should return a Struct.
 // And #symbol() of Strcut should return "point(1, X, z)".
-TEST_F(ParserTest, parseStructThreeArgs)
+TEST_F(ParserTest, parseThreeArgStruct)
 {
   Scanner scanner("point(1, X, z)");
   Parser parser(scanner);
@@ -137,11 +122,18 @@ TEST_F(ParserTest, parseStructThreeArgs)
 // When parser parses all terms via scanner.
 // Then it should return a List.
 // And #symbol() of List should return "[]".
-TEST_F(ParserTest, parseListEmpty)
+TEST_F(ParserTest, parseEmptyList)
 {
   Scanner scanner("   [   ]");
   Parser parser(scanner);
   ASSERT_EQ("[]", parser.createTerm()->symbol());
+}
+
+TEST_F(ParserTest, parseEmptyStruct)
+{
+  Scanner scanner("s(        )");
+  Parser parser(scanner);
+  ASSERT_EQ("s()", parser.createTerm()->symbol());
 }
 
 // Given there is string: "_date" in scanner.
@@ -226,7 +218,7 @@ TEST_F(ParserTest, illegal1)
   }
   catch (string e)
   {
-    EXPECT_EQ("unexpected token", e);
+    EXPECT_EQ("']' was missing when building a brackets struct", e);
   }
 }
 
@@ -236,14 +228,14 @@ TEST_F(ParserTest, illegal1)
 // And #arity() of the Struct should be 2.
 // And #symbol() of Struct should return ".(1, [])".
 // And the first term should be number: "1", the second term should be another Strcut: "[]".
-TEST_F(ParserTest, ListAsStruct)
+TEST_F(ParserTest, listAsStruct)
 {
   Scanner scanner(".(1,[])");
   Parser parser(scanner);
-  Struct *s = parser.createTerm()->getStruct();
-  ASSERT_EQ(".(1, [])", s->symbol());
-  ASSERT_EQ("1", s->args(0)->value());
-  ASSERT_EQ("[]", s->args(1)->value());
+  List *l = parser.createTerm()->getList();
+  ASSERT_EQ(".(1, [])", l->domainSymbol());
+  ASSERT_EQ("1", l->head()->value());
+  ASSERT_EQ("[]", l->tail()->symbol());
 }
 
 // Given there is string: ".(2,.(1,[]))" in scanner.
@@ -252,14 +244,15 @@ TEST_F(ParserTest, ListAsStruct)
 // And #arity() of the Struct should be 2.
 // And #symbol() of Struct should return ".(2, .(1, []))"
 // And the first term should be number: "2", the second term should be another Strcut: ".(1, [])".
-TEST_F(ParserTest, ListAsStruct2)
+TEST_F(ParserTest, listAsStruct2)
 {
   Scanner scanner(".(2,.(1,[]))");
   Parser parser(scanner);
-  Struct *s = parser.createTerm()->getStruct();
-  ASSERT_EQ(".(2, .(1, []))", s->symbol());
-  ASSERT_EQ("2", s->args(0)->value());
-  ASSERT_EQ(".(1, [])", s->args(1)->value());
+  List *l = parser.createTerm()->getList();
+  //ASSERT_TRUE(l);
+  ASSERT_EQ(".(2, .(1, []))", l->domainSymbol());
+  /*ASSERT_EQ("2", s->head()->value());
+  ASSERT_EQ(".(1, [])", s->tail()->domainSymbol());*/
 }
 
 // Given there is string: "s(s(s(s(1)))), b(1,2,3)" in scanner.
@@ -280,7 +273,7 @@ TEST_F(ParserTest, parseStructOfStructAllTheWay2)
 // When parser parses all terms via scanner.
 // Then it should return a Struct.
 // And #symbol() of Strcut should return "point()".
-TEST_F(ParserTest, parseStructNoArg)
+TEST_F(ParserTest, parseEmptyStruct2)
 {
   Scanner scanner("point()");
   Parser parser(scanner);

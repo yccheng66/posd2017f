@@ -1,13 +1,8 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <string>
-#include <utility>
-#include "atom.h"
 #include "number.h"
-#include "struct.h"
 #include "list.h"
-#include "variable.h"
 #include "scanner.h"
 using std::string;
 using std::pair;
@@ -17,14 +12,16 @@ class Parser
 public:
   Parser(Scanner scanner);
   Term *createTerm();
-  Term *buildStruct(Atom *functor);
-  Term *buildListOrStruct();
+  Term *actualTermOfAtomToken();
+  Term *buildStructByParentheses(Atom *functor);
+  Term *buildStructByBrackets();
   vector<Term *> getArgs();
 
 private:
-  Term *getTail();
+  bool isEndOfStruct();
+  Term *getTailBeforeRightBrackets();
   Scanner _scanner;
-  Prolog *_prolog;
+  Utility *_utility;
   pair<string, int> _currentToken;
 };
 #endif

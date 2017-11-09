@@ -14,9 +14,3 @@ Variable *Term::getVariable()
 {
     return nullptr;
 }
-
-/*bool Term::matchVariable(Variable *variable)
-{
-    if (variable)
-        return variable->match(this);
-}*/

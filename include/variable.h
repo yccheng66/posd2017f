@@ -16,9 +16,10 @@ private:
   string getCorrectSymbol();
   bool matchInstance(Term *term);
   void instantiate(Term *term, Variable *variable);
-  bool detectCycle(Variable *variable);
-  bool isExistInInstances(Variable *variable);
-  bool isExistInReferencers(Variable *variable);
+  bool detectCycle(Variable *matcher);
+  bool isExistInInstances(Variable *matcher);
+  bool isExistInReferencers(Variable *matcher);
+  bool isVariable(Term *term);
   bool _isVisited;
   string _symbol;
   Term *_instance;       // The instance which is instantiated by variable //

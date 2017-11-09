@@ -1,19 +1,19 @@
-#include "../include/prolog.h"
+#include "../include/utility.h"
 
-Prolog *Prolog::_instance = nullptr;
+Utility *Utility::_instance = nullptr;
 
-Prolog *Prolog::getInstance()
+Utility *Utility::getInstance()
 {
     if (!_instance)
-        _instance = new Prolog();
+        _instance = new Utility();
     return _instance;
 }
 
-bool Prolog::isSpecialChar(char c)
+bool Utility::isSpecialChar(char c)
 {
     return c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>' || c == '.' || c == '&' || c == '\\' || c == '~' || c == '^' || c == '$' || c == '#' || c == '@' || c == '?' || c == ':';
 }
 
-Prolog::Prolog()
+Utility::Utility()
 {
 }

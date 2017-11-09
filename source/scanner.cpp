@@ -1,23 +1,22 @@
 #include "../include/scanner.h"
 #include <iostream>
 
-Scanner::Scanner(string in) : _prolog(Prolog::getInstance()), _buffer(in), _position(0)
+Scanner::Scanner(string in) : _utility(Utility::getInstance()), _buffer(in), _position(0)
 {
-    //std::cout << "hello" << std::endl;
 }
 
 pair<string, int> Scanner::nextToken()
 {
     if (skipLeadingWhiteSpace() >= _buffer.length())
-        return pair<string, int>("", _prolog->EOS);
+        return pair<string, int>("", _utility->EOS);
     else if (isdigit(currentChar()))
-        return pair<string, int>(extractNumber(), _prolog->NUMBER);
+        return pair<string, int>(extractNumber(), _utility->NUMBER);
     else if (islower(currentChar()))
-        return pair<string, int>(extractAtom(), _prolog->ATOM);
-    else if (_prolog->isSpecialChar(currentChar()))
-        return pair<string, int>(extractAtomSC(), _prolog->ATOMSC);
+        return pair<string, int>(extractAtom(), _utility->ATOM);
+    else if (_utility->isSpecialChar(currentChar()))
+        return pair<string, int>(extractAtomSC(), _utility->ATOMSC);
     else if (isupper(currentChar()) || currentChar() == '_')
-        return pair<string, int>(extractVariable(), _prolog->VARIABLE);
+        return pair<string, int>(extractVariable(), _utility->VARIABLE);
     else
     {
         char c = extractChar();
@@ -52,7 +51,7 @@ string Scanner::extractAtom()
 string Scanner::extractAtomSC()
 {
     int begin = _position;
-    for (; _prolog->isSpecialChar(_buffer[_position]); _position++)
+    for (; _utility->isSpecialChar(_buffer[_position]); _position++)
         ;
     return _buffer.substr(begin, _position - begin);
 }
