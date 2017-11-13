@@ -38,6 +38,7 @@ public:
     ret  += (*it)->value()+")";
     return ret;
   }
+  int arity() const {return _args.size();}
 private:
   Atom _name;
   std::vector<Term *> _args;
