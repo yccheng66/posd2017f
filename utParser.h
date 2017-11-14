@@ -86,6 +86,7 @@ TEST_F(ParserTest,parseVar)
   Parser parser(scanner);
   ASSERT_EQ("_date", parser.createTerm()->symbol());
 }
+
 TEST_F(ParserTest,listofTermsTwoNumber)
 {
   Scanner scanner("12345 , 68");
