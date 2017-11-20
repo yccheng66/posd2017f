@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "utScanner.h"
+// #include "utScanner.h"
 #include "utParser.h"
 
 int main( int argc , char **argv )

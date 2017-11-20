@@ -16,33 +16,29 @@ protected:
 TEST_F(ParserTest, createTerm_Var){
   Scanner scanner("X");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ("X", terms[0]->symbol());
+  ASSERT_EQ("X", parser.createTerm()->symbol());
 }
 
 TEST_F(ParserTest, createTerm_Num){
   Scanner scanner("123");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ("123", terms[0]->symbol());
+  ASSERT_EQ("123", parser.createTerm()->symbol());
 }
 
 TEST_F(ParserTest, createTerm_Atom)
 {
   Scanner scanner("tom");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ("tom", terms[0]->symbol());
+  ASSERT_EQ("tom", parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, errorTerm)
+TEST_F(ParserTest, createTerm_Struct)
 {
   Scanner scanner("s(1, X, tom)");
   Parser parser(scanner);
-  ASSERT_NE(nullptr, parser.createTerm());
+  Term * term = parser.createTerm();
+  ASSERT_NE(nullptr, term);
+  ASSERT_EQ("s(1, X, tom)", term->symbol());
 }
 
 TEST_F(ParserTest, createArgs)
@@ -65,13 +61,11 @@ TEST_F(ParserTest,ListOfTermsEmpty)
   ASSERT_EQ(0,terms.size());
 }
 
-TEST_F(ParserTest,parseVar)
+TEST_F(ParserTest, createTerm_underscoredVar)
 {
   Scanner scanner("_date");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ("_date", terms[0]->symbol());
+  ASSERT_EQ("_date", parser.createTerm()->symbol());
 }
 
 TEST_F(ParserTest,listofTermsTwoNumber)
@@ -84,82 +78,50 @@ TEST_F(ParserTest,listofTermsTwoNumber)
   ASSERT_EQ("68" , terms[1]->symbol());
 }
 
-TEST_F(ParserTest, parseStructNoArg) {
+TEST_F(ParserTest, createTerm_StructWithoutArgs) {
   Scanner scanner("point()");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  EXPECT_EQ("point()",terms[0]->symbol());
+  EXPECT_EQ("point()",parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, parseStructOneArg) {
+TEST_F(ParserTest, createTerm_StructWithNumber) {
   Scanner scanner("point(11)");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  EXPECT_EQ("point(11)",terms[0]->symbol());
+  EXPECT_EQ("point(11)",parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, parseStructTwoArgs) {
+TEST_F(ParserTest, createTerm_StructWithTwoNumber) {
   Scanner scanner("point(11,12)");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  EXPECT_EQ("point(11, 12)",terms[0]->symbol());
+  EXPECT_EQ("point(11, 12)",parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, parseStructThreeArgs) {
+TEST_F(ParserTest, createTerm_StructWithThreeTerms) {
   Scanner scanner("point(1, X, z)");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  EXPECT_EQ("point(1, X, z)",terms[0]->symbol());
+  EXPECT_EQ("point(1, X, z)",parser.createTerm()->symbol());
 }
 
-TEST_F( ParserTest,  parserStructOfStruct){
+TEST_F( ParserTest, createTerm_StructWithStruct){
   Scanner scanner( "point(1, X, z(1,2,3))");
   Parser parser( scanner );
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ( "point(1, X, z(1, 2, 3))", terms[0]->symbol());
+  ASSERT_EQ( "point(1, X, z(1, 2, 3))", parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, emptyStruct)
-{
-  Scanner scanner("s()");
-  Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ("s()", terms[0]->symbol());
-}
-
-TEST_F(ParserTest, createTerms)
-{
-  Scanner scanner("s(1, X, tom)");
-  Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ("s(1, X, tom)", terms[0]->symbol());
-}
-
-TEST_F(ParserTest, NestedStruct)
+TEST_F(ParserTest, createTerm_nestedStruct)
 {
   Scanner scanner("s(s(1))");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ("s(s(1))", terms[0]->symbol());
+  ASSERT_EQ("s(s(1))", parser.createTerm()->symbol());
 }
 
-TEST_F( ParserTest, parserStructOfStructAllTheWay){
+TEST_F( ParserTest, createTerm_nestedStruct2){
   Scanner scanner( "s(s(s(s(1))))");
   Parser parser( scanner );
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ( "s(s(s(s(1))))", terms[0]->symbol());
+  ASSERT_EQ( "s(s(s(s(1))))", parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, parseStructOfStructAllTheWay2) {
+TEST_F(ParserTest, createTerm_nestedStruct3) {
   Scanner scanner("s(s(s(s(1)))), b(1,2,3)");
   Parser parser(scanner);
   parser.createTerms();
@@ -169,82 +131,68 @@ TEST_F(ParserTest, parseStructOfStructAllTheWay2) {
   EXPECT_EQ("b(1, 2, 3)",terms[1]->symbol());
 }
 
-TEST_F(ParserTest, parserStructDotsTwoArgs){
+TEST_F(ParserTest, createTerm_DotStruct){
   Scanner scanner("...(11,12)");
   Parser parser( scanner );
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ( "...(11, 12)", terms[0]->symbol());
+  ASSERT_EQ( "...(11, 12)", parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, parserListEmpty){
+TEST_F(ParserTest, createTerm_emptyList){
   Scanner scanner("   [   ]");
   Parser parser( scanner );
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ( "[]", terms[0]->symbol());
+  ASSERT_EQ( "[]", parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, parserList){
+TEST_F(ParserTest, createTerm_listWithTwoTerms){
   Scanner scanner("   [1, 2]");
   Parser parser( scanner );
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ( "[1, 2]", terms[0]->symbol());
+  ASSERT_EQ( "[1, 2]", parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, parserListOfList){
+TEST_F(ParserTest, createTerm_nestedList){
   Scanner scanner("   [  [1], [] ]");
   Parser parser( scanner );
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ( "[[1], []]", terms[0]->symbol());
+  ASSERT_EQ( "[[1], []]", parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, parserListOfListAndStruct){
+TEST_F(ParserTest, createTerm_ListOfListAndStruct){
   Scanner scanner("   [  [1], [], s(s(1)) ]   ");
   Parser parser( scanner );
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  ASSERT_EQ( "[[1], [], s(s(1))]", terms[0]->symbol());
+  ASSERT_EQ( "[[1], [], s(s(1))]", parser.createTerm()->symbol());
 }
 
-TEST_F(ParserTest, parserIllegal){
+TEST_F(ParserTest, createTerm_illeageTerm){
   Scanner scanner("[1,2)");
   Parser parser( scanner );
   try {
-    parser.createTerms();
+    parser.createTerm();
     ASSERT_TRUE(false) << "It should throw a string; \"unexpected token\" as exception.";
   } catch (std::string exception) {
     EXPECT_EQ(exception, std::string("unexpected token"));
   }
 }
 
-TEST_F(ParserTest, ListAsStruct) {
+TEST_F(ParserTest, createTerm_ListAsStruct) {
   Scanner scanner(".(1,[])");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  EXPECT_EQ(1, terms.size());
-  EXPECT_EQ(".(1, [])", terms[0]->symbol());
-  EXPECT_EQ(2, ((Struct *) terms[0])->arity());
-  Number * n = dynamic_cast<Number *>(((Struct *) terms[0])->args(0));
+  Term* term = parser.createTerm();
+  EXPECT_EQ(".(1, [])", term->symbol());
+  EXPECT_EQ(2, ((Struct *) term)->arity());
+  Number * n = dynamic_cast<Number *>(((Struct *) term)->args(0));
   EXPECT_EQ("1", n->symbol());
-  List * l = dynamic_cast<List *>(((Struct *) terms[0])->args(1));
+  List * l = dynamic_cast<List *>(((Struct *) term)->args(1));
   EXPECT_EQ("[]", l->symbol());
 }
 
-TEST_F(ParserTest, ListAsStruct2) {
+TEST_F(ParserTest, createTerm_ListAsStruct2) {
   Scanner scanner(".(2,.(1,[]))");
   Parser parser(scanner);
-  parser.createTerms();
-  vector<Term*> terms = parser.getTerms();
-  EXPECT_EQ(1, terms.size());
-  EXPECT_EQ(".(2, .(1, []))", terms[0]->symbol());
-  EXPECT_EQ(2, ((Struct *) terms[0])->arity());
-  Number * n = dynamic_cast<Number *>(((Struct *) terms[0])->args(0));
+  Term* term = parser.createTerm();
+  EXPECT_EQ(".(2, .(1, []))", term->symbol());
+  EXPECT_EQ(2, ((Struct *) term)->arity());
+  Number * n = dynamic_cast<Number *>(((Struct *) term)->args(0));
   EXPECT_EQ("2", n->symbol());
-  Struct * s = dynamic_cast<Struct *>(((Struct *) terms[0])->args(1));
+  Struct * s = dynamic_cast<Struct *>(((Struct *) term)->args(1));
   EXPECT_EQ(".(1, [])", s->symbol());
 }
 

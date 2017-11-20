@@ -10,6 +10,8 @@ using std::string;
 #include "struct.h"
 #include "list.h"
 
+#include "utParser.h"
+
 class Parser{
 public:
   Parser(Scanner scanner) : _scanner(scanner), _terms(){}
@@ -36,16 +38,7 @@ public:
     return nullptr;
   }
 
-  void createTerms() {
-    Term* term = createTerm();
-    if(term!=nullptr)
-    {
-      _terms.push_back(term);
-      while((_currentToken = _scanner.nextToken()) == ',') {
-        _terms.push_back(createTerm());
-      }
-    }
-  }
+
 
   Term * structure() {
     Atom structName = Atom(symtable[_scanner.tokenValue()].first);
@@ -80,6 +73,22 @@ public:
   }
 
 private:
+  FRIEND_TEST(ParserTest, createArgs);
+  FRIEND_TEST(ParserTest,ListOfTermsEmpty);
+  FRIEND_TEST(ParserTest,listofTermsTwoNumber);
+  FRIEND_TEST(ParserTest, createTerm_nestedStruct3);
+
+  void createTerms() {
+    Term* term = createTerm();
+    if(term!=nullptr)
+    {
+      _terms.push_back(term);
+      while((_currentToken = _scanner.nextToken()) == ',') {
+        _terms.push_back(createTerm());
+      }
+    }
+  }
+
   vector<Term *> _terms;
   Scanner _scanner;
   int _currentToken;
