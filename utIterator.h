@@ -72,6 +72,16 @@ TEST(iterator, firstList) {
     ASSERT_TRUE(itList->isDone());
 }
 
+TEST(iterator, NullIterator){
+  Number one(1);
+  NullIterator nullIterator(&one);
+  nullIterator.first();
+  ASSERT_TRUE(nullIterator.isDone());
+  Iterator * it = one.createIterator();
+  it->first();
+  ASSERT_TRUE(it->isDone());
+}
+
 
 
 #endif
