@@ -28,8 +28,7 @@ public:
 
 class StructIterator :public Iterator {
 public:
-  StructIterator(Struct *s): _index(0), _s(s) {}
-
+  friend class Struct;
   void first() {
     _index = 0;
   }
@@ -46,6 +45,7 @@ public:
     _index++;
   }
 private:
+  StructIterator(Struct *s): _index(0), _s(s) {}
   int _index;
   Struct* _s;
 };

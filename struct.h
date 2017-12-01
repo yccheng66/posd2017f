@@ -30,6 +30,7 @@ public:
     ret  += (*it)->symbol()+")";
     return ret;
   }
+
   string value() const {
     string ret = _name.symbol() + "(";
     std::vector<Term *>::const_iterator it = _args.begin();
@@ -39,6 +40,7 @@ public:
     return ret;
   }
   int arity() const {return _args.size();}
+  Iterator * createIterator();
 private:
   Atom _name;
   std::vector<Term *> _args;
