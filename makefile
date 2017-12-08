@@ -1,4 +1,4 @@
-all: madRace utAtom utVariable utScanner
+all: madRace utAtom utVariable utScanner utIterator
 
 madRace: mainMadRace.o
 	g++ -o madRace mainMadRace.o -lgtest -lpthread

@@ -4,7 +4,13 @@
 #include <iostream>
 #include <string>
 #include "list.h"
+#include "iterator.h"
 using std::vector;
+
+Iterator * List::createIterator()
+{
+  return new ListIterator(this);
+}
 
 string List::symbol() const{
     string ret ;
@@ -44,32 +50,22 @@ bool List::match(Term & term) {
         ret = false;
         }
         else{
-            for(int i = 0 ; i < _elements.size() ;i++ ){
-                ret = _elements[i]->match(*(ptrls->_elements[i])) ;
-                if(ret == false)
-                    return ret;
+            Iterator * itSelf = createIterator();
+            Iterator * itOther = term.createIterator();
+            for(itSelf->first(), itOther->first(); !itSelf->isDone(); itSelf->next(), itOther->next()){
+              ret = itSelf->currentItem()->match(*itOther->currentItem());
+              if(ret == false)
+                  return ret;
             }
+            // for(int i = 0 ; i < _elements.size() ;i++ ){
+            //     ret = _elements[i]->match(*(ptrls->_elements[i])) ;
+            //     if(ret == false)
+            //         return ret;
+            // }
         }
         return ret;
     }
-    else if(typeid(term) == typeid(Variable)){
-        bool ret =true;
-        for(int i = 0 ; i < _elements.size() ;i++ ){
-        if(_elements[i]->symbol() ==  term.symbol()){
-            if( _elements[i]->symbol() == term.symbol() ){
-                ret= false;
-                return ret;
-            }
-        ret = _elements[i]->match(term) ;
-        }
-        if(ret == false)
-                return ret;
-        }
-        return ret;
-    }
-    else{
-        return value () == term.value();
-    }
+    return term.match(*this);
 }
 Term * List::head() const{
     if(_elements.empty())

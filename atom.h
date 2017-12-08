@@ -13,13 +13,7 @@ public:
   virtual bool match(Term & a);
   virtual Iterator * createIterator();
 protected:
-  Term ():_symbol(""){}
-  Term (string s):_symbol(s) {}
-  Term(double db){
-    std::ostringstream strs;
-    strs << db;
-    _symbol = strs.str();
-  }
+  Term (string s = ""):_symbol(s) {}
   string _symbol;
 };
 
@@ -30,7 +24,11 @@ public:
 
 class Number : public Term{
 public:
-  Number(double db):Term(db) {}
+  Number(double db){
+      std::ostringstream strs;
+      strs << db;
+      _symbol = strs.str();
+  }
 };
 
 #endif
