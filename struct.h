@@ -13,7 +13,23 @@ public:
     _args = args;
   }
 
- bool match( Term &term );
+  Struct() {
+    
+  }
+
+  bool match(Term &term) {
+    if (term.getVariable() != nullptr) {
+      return term.match(*this);
+    }
+    Struct *s = term.getStruct();
+    if (s == nullptr || s->arity() != arity() || !_name.match(s->_name))
+      return false;
+
+    for (int i = 0; i < _args.size(); i++)
+      if (!s->_args[i]->match(*_args[i]))
+        return false;
+    return true;
+  }
 
   Term * args(int index) {
     return _args[index];
@@ -22,19 +38,30 @@ public:
   Atom & name() {
     return _name;
   }
-  string symbol() const;
+
+  string symbol() const {
+      string ret = _name.symbol() + "(";
+      for (int i = 0; i < _args.size(); i++)
+        ret += ((i > 0) ?  ", "  : "") + _args[i]->symbol();
+      return ret + ")";
+  }
 
   string value() const {
     string ret = _name.symbol() + "(";
-    std::vector<Term *>::const_iterator it = _args.begin();
-    for (; it != _args.end()-1; ++it)
-      ret += (*it)->value()+", ";
-    ret  += (*it)->value()+")";
-    return ret;
+    for (int i = 0; i < _args.size(); i++)
+      ret += ((i > 0) ?  ", "  : "") + _args[i]->value();
+    return ret + ")";
   }
-  int arity() const {return _args.size();}
-  Iterator * createIterator();
 
+  int arity() const {
+    return _args.size();
+  }
+
+  Struct* getStruct() {
+    return this;
+  }
+
+  Iterator * createIterator();
 private:
   Atom _name;
   std::vector<Term *> _args;
