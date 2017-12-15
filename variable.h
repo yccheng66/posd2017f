@@ -21,7 +21,8 @@ public:
   bool match( Term & term ) {
     if (_instance != nullptr)
       return _instance->match(term);
-    _instance = &term;
+    if (&term != this)
+      _instance = &term;
     return true;
   }
 

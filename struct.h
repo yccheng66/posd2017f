@@ -9,13 +9,9 @@ using std::string;
 
 class Struct: public Term {
 public:
-  Struct(Atom name, std::vector<Term *> args): _name(name) {
-    _args = args;
+  Struct(Atom name, std::vector<Term *> args): _name(name), _args(args){
   }
 
-  Struct() {
-    
-  }
 
   bool match(Term &term) {
     if (term.getVariable() != nullptr) {
@@ -62,7 +58,7 @@ public:
   }
 
   Iterator * createIterator();
-private:
+protected:
   Atom _name;
   std::vector<Term *> _args;
 };

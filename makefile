@@ -5,9 +5,9 @@ madRace: mainMadRace.o
 mainMadRace.o: mainMadRace.cpp madRace.h utMadRace.h
 	g++ -std=c++11 -c mainMadRace.cpp
 
-utAtom: mainAtom.o atom.o struct.o
-	g++ -o utAtom mainAtom.o atom.o struct.o -lgtest -lpthread
-mainAtom.o: mainAtom.cpp utAtom.h atom.h utStruct.h struct.h
+utAtom: mainAtom.o list.o atom.o struct.o
+	g++ -o utAtom mainAtom.o atom.o list.o struct.o -lgtest -lpthread
+mainAtom.o: mainAtom.cpp utList.h utAtom.h atom.h utStruct.h struct.h
 	g++ -std=c++11 -c mainAtom.cpp
 
 atom.o: atom.cpp atom.h variable.h
