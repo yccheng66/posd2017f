@@ -9,12 +9,13 @@ using std::string;
 #include "scanner.h"
 #include "struct.h"
 #include "list.h"
+#include "exp.h"
 
 #include "utParser.h"
 
 class Parser{
 public:
-  Parser(Scanner scanner) : _scanner(scanner), _terms(){}
+  Parser(Scanner scanner) : _scanner(scanner), _terms(), _root(nullptr){}
 
   Term* createTerm(){
     int token = _scanner.nextToken();
@@ -62,6 +63,9 @@ public:
     {
       vector<Term *> args(_terms.begin() + startIndexOfListArgs, _terms.end());
       _terms.erase(_terms.begin() + startIndexOfListArgs, _terms.end());
+      if(args.size()==0){
+        return new Atom("[]");
+      }
       return new List(args);
     } else {
       throw string("unexpected token");
@@ -72,11 +76,20 @@ public:
     return _terms;
   }
 
+  void buildExpression(){
+    // createTerm();
+
+  }
+
+  MatchExp* getExpressionTree(){
+    return _root;
+  }
 private:
   FRIEND_TEST(ParserTest, createArgs);
   FRIEND_TEST(ParserTest,ListOfTermsEmpty);
   FRIEND_TEST(ParserTest,listofTermsTwoNumber);
   FRIEND_TEST(ParserTest, createTerm_nestedStruct3);
+  FRIEND_TEST(ParserTest, createTerms);
 
   void createTerms() {
     Term* term = createTerm();
@@ -92,5 +105,6 @@ private:
   vector<Term *> _terms;
   Scanner _scanner;
   int _currentToken;
+  MatchExp* _root;
 };
 #endif

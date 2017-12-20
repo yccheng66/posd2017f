@@ -6,7 +6,7 @@ mainMadRace.o: mainMadRace.cpp madRace.h utMadRace.h
 	g++ -std=c++11 -c mainMadRace.cpp
 
 utAtom: mainAtom.o list.o atom.o struct.o
-	g++ -o utAtom mainAtom.o atom.o list.o struct.o -lgtest -lpthread
+	g++ -o utAtom mainAtom.o atom.o list.o struct.o  -lgtest -lpthread
 mainAtom.o: mainAtom.cpp utList.h utAtom.h atom.h utStruct.h struct.h
 	g++ -std=c++11 -c mainAtom.cpp
 
@@ -28,7 +28,7 @@ struct.o:struct.cpp struct.h
 
 utScanner: mainScanner.o atom.o list.o struct.o scanner.h utScanner.h utParser.h parser.h
 	g++ -o utScanner mainScanner.o atom.o list.o struct.o -lgtest -lpthread
-mainScanner.o: mainScanner.cpp utScanner.h scanner.h  atom.h struct.h variable.h  utParser.h parser.h
+mainScanner.o: mainScanner.cpp utScanner.h scanner.h  atom.h struct.h variable.h  utParser.h parser.h utExp.h
 		g++ -std=c++11 -c mainScanner.cpp
 utIterator: mainIterator.o atom.o list.o struct.o iterator.h utIterator.h
 	g++ -o utIterator mainIterator.o atom.o list.o struct.o -lgtest -lpthread

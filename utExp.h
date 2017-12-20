@@ -4,6 +4,7 @@
 #include "atom.h"
 #include "variable.h"
 #include "exp.h"
+#include "parser.h"
 
 TEST(Exp, matchExp) {
   Atom tom("tom");
@@ -11,6 +12,17 @@ TEST(Exp, matchExp) {
   MatchExp mExp(&tom, &X);
   ASSERT_TRUE(mExp.evaluate());
   ASSERT_EQ("tom", X.value());
+}
+
+TEST(Exp, buildExp) {
+  // Atom tom("tom");
+  // Variable X("X");
+  // MatchExp mExp(&tom, &X);
+  Scanner s("tom=X.");
+  Parser p(s);
+  p.buildExpression();
+  ASSERT_TRUE(p.getExpressionTree());
+  ASSERT_TRUE(p.getExpressionTree()->evaluate());
 }
 
 #endif

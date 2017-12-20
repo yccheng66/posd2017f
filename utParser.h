@@ -149,6 +149,12 @@ TEST_F(ParserTest, createTerm_listWithTwoTerms){
   ASSERT_EQ( "[1, 2]", parser.createTerm()->symbol());
 }
 
+TEST_F(ParserTest, createTerms){
+  Scanner scanner("[1],[]");
+  Parser parser( scanner );
+  ASSERT_EQ( "[1]", parser.createTerm()->symbol());
+}
+
 TEST_F(ParserTest, createTerm_nestedList){
   Scanner scanner("   [  [1], [] ]");
   Parser parser( scanner );
@@ -180,7 +186,7 @@ TEST_F(ParserTest, createTerm_ListAsStruct) {
   EXPECT_EQ(2, ((Struct *) term)->arity());
   Number * n = dynamic_cast<Number *>(((Struct *) term)->args(0));
   EXPECT_EQ("1", n->symbol());
-  List * l = dynamic_cast<List *>(((Struct *) term)->args(1));
+  Atom * l = dynamic_cast<Atom *>(((Struct *) term)->args(1));
   EXPECT_EQ("[]", l->symbol());
 }
 
