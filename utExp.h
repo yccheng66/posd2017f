@@ -25,4 +25,44 @@ TEST(Exp, buildExp) {
   ASSERT_TRUE(p.getExpressionTree()->evaluate());
 }
 
+TEST(Exp, buildConjunctionExp) {
+  Scanner s("Y = 2, Z = 3.");
+  Parser p(s);
+  p.buildExpression();
+  ASSERT_TRUE(p.getExpressionTree());
+  ASSERT_TRUE(p.getExpressionTree()->evaluate());
+}
+
+TEST(Exp, buildConjunctionExpFail) {
+  Scanner s("Y = 2, 1 = 3.");
+  Parser p(s);
+  p.buildExpression();
+  ASSERT_TRUE(p.getExpressionTree());
+  ASSERT_FALSE(p.getExpressionTree()->evaluate());
+}
+
+TEST(Exp, buildDisjunctionExp) {
+  Scanner s("X = 1; Y = 2, 1 = 3.");
+  Parser p(s);
+  p.buildExpression();
+  ASSERT_TRUE(p.getExpressionTree());
+  ASSERT_TRUE(p.getExpressionTree()->evaluate());
+}
+
+TEST(Exp, buildDisjunctionExpFail) {
+  Scanner s("2 = 1; Y = 2, 1 = 3.");
+  Parser p(s);
+  p.buildExpression();
+  ASSERT_TRUE(p.getExpressionTree());
+  ASSERT_FALSE(p.getExpressionTree()->evaluate());
+}
+
+TEST(Exp, buildDisjunctionExpSuc) {
+  Scanner s("2 = 1; Y = 2, Z = 3.");
+  Parser p(s);
+  p.buildExpression();
+  ASSERT_TRUE(p.getExpressionTree());
+  ASSERT_TRUE(p.getExpressionTree()->evaluate());
+}
+
 #endif

@@ -10,12 +10,13 @@ using std::string;
 #include "struct.h"
 #include "list.h"
 #include "exp.h"
+#include <stack>
 
-#include "utParser.h"
+using std::stack;
 
 class Parser{
 public:
-  Parser(Scanner scanner) : _scanner(scanner), _terms(), _root(nullptr){}
+  Parser(Scanner scanner) : _scanner(scanner), _terms() {}
 
   Term* createTerm(){
     int token = _scanner.nextToken();
@@ -78,12 +79,55 @@ public:
 
   void buildExpression(){
     // createTerm();
-
+    disjunctionMatch();
+    restDisjunctionMatch();
+    if (createTerm() != nullptr || _currentToken != '.')
+      throw string("expected token.");
   }
 
-  MatchExp* getExpressionTree(){
-    return _root;
+  void restDisjunctionMatch() {
+    if (_scanner.currentChar() == ';') {
+      createTerm();
+      disjunctionMatch();
+      Exp *right = _expStack.top();
+      _expStack.pop();
+      Exp *left = _expStack.top();
+      _expStack.pop();
+      _expStack.push(new DisjExp(left, right));
+      restDisjunctionMatch();
+    }
   }
+
+  void disjunctionMatch() {
+    conjunctionMatch();
+    restConjunctionMatch();
+  }
+
+  void restConjunctionMatch() {
+    if (_scanner.currentChar() == ',') {
+      createTerm();
+      conjunctionMatch();
+      Exp *right = _expStack.top();
+      _expStack.pop();
+      Exp *left = _expStack.top();
+      _expStack.pop();
+      _expStack.push(new ConjExp(left, right));
+      restConjunctionMatch();
+    }
+  }
+
+  void conjunctionMatch() {
+    Term * left = createTerm();
+    if (createTerm() == nullptr && _currentToken == '=') {
+      Term * right = createTerm();
+      _expStack.push(new MatchExp(left, right));
+    }
+  }
+
+  Exp* getExpressionTree(){
+    return _expStack.top();
+  }
+
 private:
   FRIEND_TEST(ParserTest, createArgs);
   FRIEND_TEST(ParserTest,ListOfTermsEmpty);
@@ -105,6 +149,7 @@ private:
   vector<Term *> _terms;
   Scanner _scanner;
   int _currentToken;
-  MatchExp* _root;
+  //MatchExp* _root;
+  stack<Exp*> _expStack;
 };
 #endif

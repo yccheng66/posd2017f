@@ -3,7 +3,13 @@
 
 #include "atom.h"
 
-class MatchExp{
+class Exp {
+public:
+  virtual bool evaluate() = 0;
+};
+
+
+class MatchExp : public Exp {
 public:
   MatchExp(Term* left, Term* right): _left(left), _right(right){
 
@@ -18,4 +24,33 @@ private:
   Term* _right;
 };
 
+class ConjExp : public Exp {
+public:
+  ConjExp(Exp *left, Exp *right) : _left(left), _right(right) {
+
+  }
+
+  bool evaluate() {
+    return (_left->evaluate() && _right->evaluate());
+  }
+
+private:
+  Exp * _left;
+  Exp * _right;
+};
+
+class DisjExp : public Exp {
+public:
+  DisjExp(Exp *left, Exp *right) : _left(left), _right(right) {
+
+  }
+
+  bool evaluate() {
+    return (_left->evaluate() || _right->evaluate());
+  }
+
+private:
+  Exp * _left;
+  Exp * _right;
+};
 #endif
